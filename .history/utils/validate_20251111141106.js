@@ -1,0 +1,10 @@
+const ownerSchema = require('../validations/ownerValidation');
+
+const sendd = (ownerSchema) => (req, res, next) => {
+    const { error, value } = ownerSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+    req.body = value; // replace with validated data
+    next(); // proceed to route handler
+};
+
+module.exports = sendd;
