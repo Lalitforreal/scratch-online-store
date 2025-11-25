@@ -1,0 +1,177 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script></head>
+<body class="font-'helvetica_now_display' border-box m-0 p-0 overflow-x-hidden">      
+<%- include('./partials/header') %>
+
+
+    <% if(success.length>0){ %>
+<div id="flashMessage" class="flash success fixed bottom-18 left-[55vw] -translate-x-1/2 w-[15%]
+        bg-blue-800/40 backdrop-blur-xl
+        rounded-full px-8 py-3 flex flex-row justify-center
+        shadow-lg border border-white/10 z-50 mb-10 text-black"> 
+    <span class="inline-block mt-1 mb-1 px-1 text-black">
+        <%= success %>
+    </span>
+        </div>
+        <% } %>
+
+<% let total = 0;%>
+<div class="flex flex-row ">
+    <div class="mt-25 ml-17">
+        
+        <% products.forEach(function(item){ %>
+            <div class="w-[75vw] flex items-start mt-10 ml-25  gap-12">
+                
+                <div class="w-[60%] rounded-md overflow-hidden">
+                    <div class="w-full h-80 bg-yellow-500">
+                        <img class="h-[100%] w-full object-cover" src="data:image/jpeg;base64,<%= item.product.image.toString('base64') %>"
+                        alt="">
+                    </div>
+                    <div class="w-full flex gap-3 justify-between mt-3 mb-1">
+                        <h3 class="text-2xl"><%= item.product.name %></h3>
+                        
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 bg-white flex rounded-full items-center justify-center" >
+                                <a href="/incquantity/<%= item.product._id %>" class="font-'helvetica_now_display' text-xl"> + </a>
+                            </div>
+                            <div class="px-2 py-1 rounded-md bg-white text-black">
+                                <p>Quantity: <%= item.quantity %></p>
+                                
+                            </div>
+                            <div class="w-7 h-7 bg-white flex rounded-full items-center justify-center text-xl">
+                                <a href="/decquantity/<%= item.product._id %>"> - </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col ">
+                        <a class="text-red-600 text-xl" href="/remove/<%= item.product._id %>">Remove from cart</a>
+                    </div>
+                </div>
+                <div class="w-[80%] mt-7">
+                    <h3 class="text-xl text-grey-600">Price Breakdown</h3>
+                    <div class="px-10 mt-5">
+                        <div class="flex mt-2">
+                            <h4 class="w-1/3">Total MRP</h4>
+                            <h4>₹ <%= item.product.price %></h4>
+                        </div>
+                        <div class="flex mt-2">
+                            <h4 class="w-1/3">Discount on MRP</h4>
+                            <h4>₹ <%=item.product.discount%></h4>
+                        </div>
+                        <div class="flex mt-2">
+                            <h4 class="w-1/3">Platform Fee</h4>
+                            <h4>₹ 20</h4>
+                        </div>
+                        <div class="flex mt-2">
+                            <h4 class="w-1/3">Shipping Fee</h4>
+                            <h4>FREE</h4>
+                        </div>
+                    </div>
+                    <div class="w-[50%] h-[1px] bg-black mt-10"></div>
+                    <div class="flex mt-5">
+                        <h3 class="w-1/3 text-xl">Product Amount</h3>
+                        <h3 class="font-semibold text-xl text-green-600">₹ <%= (item.product.price-item.product.discount + 20)%> </h3>
+                    </div>
+                    <div class="flex mt-2 gap-1">
+                        <h3 class="w-1/3 text-xl">Net Total : </h3>
+                        <h3 class="font-semibold text-xl text-green-600">
+                            ₹<%= (item.product.price-item.product.discount + 20)*item.quantity  %>
+                        </h3>
+                    </div>
+                    <form action=""></form>
+                </div>
+                
+            </div>
+            <div class=" ml-25 w-[69%] h-[1px] bg-black mt-10"></div>
+            <% })%>
+        </div>
+
+        <div class="flex flex-row justify-center items-start mt-[10%]">
+            
+            <div class="fixed min-w-[25vw] left-[97vw] -translate-x-1/2 
+                bg-black/20 backdrop-blur-2xl p-5 shadow-lg rounded-lg border border-white/10">
+                
+                
+                
+                
+                <form action="/set-default-address" class="mt-2" method="post">
+                    
+                    <% if (addresses && addresses.length > 0) { %>
+                        <% addresses.forEach(address => { %>
+                            
+                            <div class="p-4 border rounded-lg mb-3 flex gap-3 items-start">
+                                <!-- Radio button -->
+                                <input 
+                                type="radio" 
+                                name="selectedAddress" 
+                                value="<%= address._id %>" 
+                                class="mt-2"
+                                <%= address.isDefault ? "checked" : "" %>
+                                >
+                                
+                                <!-- Address Details -->
+                                <div>
+                                    <p><strong><%= address.fullName %></strong></p>
+                                    <p><%= address.line1 %>, <%= address.line2 %></p>
+                                    <p><%= address.city %>, <%= address.state %> - <%= address.pincode %></p>
+                                    <p>Phone: <%= address.phone %></p>
+                                    <div class="flex justify-between mt-2">
+                                        <% if (address.isDefault) { %>
+                                            <span class="text-green-600 font-bold mr-7">Default Address</span>
+                                            <% } %>
+                                            <a href="/delete-address/<%= address._id%>" class=" text-red-500"> Delete address</a>
+                                        </div>
+                       
+                            
+                                        <!-- Submit to set selected address as default -->
+                                         <%if(!address.isDefault){%>
+                                             <button 
+                                                 type="submit" 
+                                                 class=" bg-green-200 text-black rounded-lg mt-1"
+                                                 >
+                                                 Set as Default
+                                             </button>
+                                         <%}%>
+                                        
+                                    </div>
+                                    
+                                </div>
+                                <% }) %>
+                                
+
+                            
+                            <% } else { %>
+                                <p class="text-gray-500">No saved addresses yet.</p>
+                                <% } %>
+                                
+                            </form>
+                            
+                            <form class="flex justify-start" action="/add-address" method = "post">
+                                <a class="text-blue-600" href="/address">Add address + </a>
+                            </form>
+
+                            <form class="flex justify-center mt-2" action="/order-summary" method="get">
+                                <button class=" text-2xl font-bold" type="submit">Place order</button>
+                            </form>
+                
+                        </div>
+                    </div>
+                    <script>
+                        setTimeout(() => {
+                            const flash = document.getElementById("flashMessage");
+                            if (flash) {
+                                flash.style.transition = "opacity 0.8s";
+                                flash.style.opacity = "0";
+                                setTimeout(() => flash.remove(), 800); // remove from DOM
+                    }
+                }, 1000); // ← fade after 2 seconds
+            </script>
+    <%- include('./partials/footer') %>
+</body>
+</html>
