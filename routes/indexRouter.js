@@ -8,7 +8,6 @@ const {forgotPass} = require('../controllers/authController');
 const {resetPassword} = require('../controllers/authController');
 
 
-
 router.get('/', function(req, res) {
     const error = req.flash('error');
     const success = req.flash('success');
